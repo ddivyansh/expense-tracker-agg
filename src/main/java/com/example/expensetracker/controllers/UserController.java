@@ -7,7 +7,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,11 +27,18 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> loginUser(@RequestBody Map<String, Object> userMap) {
+    public Object loginUser(@RequestBody Map<String, Object> userMap) {
         String email = (String) userMap.get("email");
         String password = (String) userMap.get("password");
         User user = userService.validateUser(email, password);
-        return new ResponseEntity<>(generateJWTToken(user), HttpStatus.OK);
+        if(user == null){
+            return "redirect:/register";
+        }
+        /*
+        create a cookie with user-id as key and value as jwt token, and store the cookie in the response entity for our browser/client.
+         */
+        ResponseCookie userCookie = createUserCookie(user);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, userCookie.toString()).build();
     }
 
     @PostMapping("/register")
@@ -40,7 +48,8 @@ public class UserController {
         String email = (String) userMap.get("email");
         String password = (String) userMap.get("password");
         User user = userService.registerUser(firstName, lastName, email, password);
-        return new ResponseEntity<>(generateJWTToken(user), HttpStatus.OK);
+        ResponseCookie userCookie = createUserCookie(user);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, userCookie.toString()).build();
     }
 
     private Map<String, String> generateJWTToken(User user) {
@@ -56,5 +65,12 @@ public class UserController {
         Map<String, String> map = new HashMap<>();
         map.put("token", token);
         return map;
+    }
+
+    private ResponseCookie createUserCookie(User user) {
+        return ResponseCookie.from("user-id", generateJWTToken(user).get("token"))
+                .path("/")
+                .maxAge(1800)
+                .build();
     }
 }

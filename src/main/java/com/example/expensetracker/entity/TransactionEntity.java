@@ -21,7 +21,7 @@ public class TransactionEntity {
 
     /*
     name of the foreign key column is category_id
-    and it references to primary key of Category
+    and it references to primary key of CategoryEntity
      */
     @ManyToOne
     @JoinColumn(name = "category_id")

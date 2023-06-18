@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -28,4 +30,9 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @OneToMany(mappedBy = "userEntity")
+    List<CategoryEntity> categoryEntities;
+
+    @OneToMany(mappedBy = "userEntity")
+    List<TransactionEntity> transactionEntityList;
 }

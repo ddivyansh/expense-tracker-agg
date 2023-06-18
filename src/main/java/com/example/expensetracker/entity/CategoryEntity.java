@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class CategoryEntity {
     private Integer categoryId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",referencedColumnName = "user_Id")
+    @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
     @Column(name = "title", nullable = false, length = 20)
@@ -25,4 +27,7 @@ public class CategoryEntity {
 
     @Column(name = "description", nullable = false, length = 50)
     private String description;
+
+    @OneToMany(mappedBy = "categoryEntity")
+    List<TransactionEntity> transactionEntityList;
 }

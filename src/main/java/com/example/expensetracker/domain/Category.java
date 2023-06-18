@@ -1,11 +1,8 @@
 package com.example.expensetracker.domain;
 
 import lombok.*;
-import lombok.extern.jackson.Jacksonized;
 
-@Value
-@Builder
-@Jacksonized
+@Data
 public class Category {
     Integer categoryId;
     Integer userId;
